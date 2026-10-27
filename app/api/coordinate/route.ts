@@ -16,10 +16,15 @@ const ROOT = "/vercel/sandbox";
 const MAX_TURNS = Math.min(20, Math.max(1, Number.parseInt(process.env.MAX_EXECUTOR_TURNS ?? "12", 10) || 12));
 
 function safePath(input: string) {
-  if (!input || input.includes("\\\\") || input.includes("\\0")) throw new Error("Invalid file path");
-  const clean = input.replace(/^\\.\\//, "");
+  if (!input || input.includes("\\") || input.includes("\0")) throw new Error("Invalid file path");
+  const clean = input.replace(/^\.\//, "");
   const parts = clean.split("/");
-  if (clean.startsWith("/") || parts.some((part) => part === ".." || part === "" || part === ".git") ||\n      parts.some((part) => part === ".env" || (part.startsWith(".env.") && part !== ".env.example")) || clean.length > 240) {
+  if (
+    clean.startsWith("/") ||
+    parts.some((part) => part === ".." || part === "" || part === ".git") ||
+    parts.some((part) => part === ".env" || (part.startsWith(".env.") && part !== ".env.example")) ||
+    clean.length > 240
+  ) {
     throw new Error("Path must remain inside the workspace");
   }
   return ROOT + "/" + clean;
