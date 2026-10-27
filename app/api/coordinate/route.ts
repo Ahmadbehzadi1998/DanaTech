@@ -96,7 +96,7 @@ async function runTool(sandbox: Sandbox, name: string, rawArgs: string) {
   throw new Error("Unknown tool");
 }
 
-async function commitChanges(sandbox: Sandbox) {
+async function readWorkspaceFile(sandbox: Sandbox, filePath: string) {\n  const result = await sandbox.runCommand({ cmd: "cat", args: [safePath(filePath)] });\n  if (result.exitCode !== 0) throw new Error("Could not read changed file: " + filePath);\n  const text = await result.stdout();\n  if (Buffer.byteLength(text, "utf8") > 250000) throw new Error("Changed file exceeds 250 KB: " + filePath);\n  return text;\n}\n\nasync function commitChanges(sandbox: Sandbox) {
   const status = await runCmd(sandbox, "git", ["status", "--porcelain", "--untracked-files=all"]);
   if (status.exitCode !== 0) throw new Error("Could not inspect changes");
   const rows = status.stdout.split("\\n").map((line) => line.trimEnd()).filter(Boolean);
@@ -127,7 +127,7 @@ async function commitChanges(sandbox: Sandbox) {
     const sha = existing && !Array.isArray(existing.data) && existing.data.type === "file" ? existing.data.sha : undefined;
     await octokit.rest.repos.createOrUpdateFileContents({
       owner: OWNER, repo: REPO, path: filePath, message: "feat(agent): update " + filePath,
-      content: Buffer.from(read.stdout, "utf8").toString("base64"), branch: BRANCH, ...(sha ? { sha } : {}),
+      content: Buffer.from(fileContent, "utf8").toString("base64"), branch: BRANCH, ...(sha ? { sha } : {}),
     });
     committed.push(filePath);
   }
