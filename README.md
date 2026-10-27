@@ -44,6 +44,6 @@ Body:
 
 ## Status and limitations
 
-This is an initial scaffold, not a verified production service. Dependencies have not yet been installed and the build has not yet been run in this environment. Before deployment, run dependency installation, type-check/build, and security tests; verify Vercel Sandbox access, API quota, and the GitHub token's restricted permissions. Test only on a non-production branch first.
+This is an initial scaffold, not a verified production service. Dependencies have not yet been installed and the build has not yet been run in this environment. The sandbox network is restricted to GitHub and npm registry domains during the execution loop. Before deployment, run dependency installation, type-check/build, and security tests; verify Vercel Sandbox access, API quota, and the GitHub token's restricted permissions. Test only on a non-production branch first.
 
 The coordinator does not deploy to Production. Review generated commits and test results before merging.
