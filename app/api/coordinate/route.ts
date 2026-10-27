@@ -19,7 +19,7 @@ function safePath(input: string) {
   if (!input || input.includes("\\\\") || input.includes("\\0")) throw new Error("Invalid file path");
   const clean = input.replace(/^\\.\\//, "");
   const parts = clean.split("/");
-  if (clean.startsWith("/") || parts.some((part) => part === ".." || part === "") || clean.length > 240) {
+  if (clean.startsWith("/") || parts.some((part) => part === ".." || part === "" || part === ".git") ||\n      parts.some((part) => part === ".env" || (part.startsWith(".env.") && part !== ".env.example")) || clean.length > 240) {
     throw new Error("Path must remain inside the workspace");
   }
   return ROOT + "/" + clean;
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
     sandbox = await Sandbox.create({
       source: { type: "git", url: "https://github.com/" + OWNER + "/" + REPO + ".git" },
       timeout: 10 * 60 * 1000,
-      networkPolicy: "allow-all",
+      networkPolicy: { allow: { "github.com": [], "*.github.com": [], "registry.npmjs.org": [], "*.npmjs.org": [] } },
     });
     const checkout = await runCmd(sandbox, "git", ["checkout", BRANCH]);
     if (checkout.exitCode !== 0) throw new Error("Could not check out the configured working branch");
@@ -194,11 +194,11 @@ export async function POST(request: Request) {
       throw new Error("Executor reached the tool-call limit; changes were not committed");
     }
 
-    const changed = await commitChanges(sandbox);
+    const install = await runCmd(sandbox, "npm", ["install"]);\n    if (install.exitCode !== 0) throw new Error("Dependency installation failed; no changes were committed. " + install.stderr.slice(0, 1500));\n    const typecheck = await runCmd(sandbox, "npm", ["run", "typecheck"]);\n    if (typecheck.exitCode !== 0) throw new Error("Type-check failed; no changes were committed. " + typecheck.stderr.slice(0, 1500));\n    const build = await runCmd(sandbox, "npm", ["run", "build"]);\n    if (build.exitCode !== 0) throw new Error("Build failed; no changes were committed. " + build.stderr.slice(0, 1500));\n    const changed = await commitChanges(sandbox);
     return NextResponse.json({
       status: "completed", planner: "Gemini", executor: "OpenAI API",
       repository: OWNER + "/" + REPO, branch: BRANCH, geminiPlan,
-      executionReport: response.output_text, committedFiles: changed,
+      executionReport: response.output_text, checks: { install: "passed", typecheck: "passed", build: "passed" }, committedFiles: changed,
       productionDeployment: "not attempted; separate approval required",
     });
   } catch (error) {
