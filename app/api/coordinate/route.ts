@@ -101,10 +101,18 @@ async function runTool(sandbox: Sandbox, name: string, rawArgs: string) {
   throw new Error("Unknown tool");
 }
 
-async function readWorkspaceFile(sandbox: Sandbox, filePath: string) {\n  const result = await sandbox.runCommand({ cmd: "cat", args: [safePath(filePath)] });\n  if (result.exitCode !== 0) throw new Error("Could not read changed file: " + filePath);\n  const text = await result.stdout();\n  if (Buffer.byteLength(text, "utf8") > 250000) throw new Error("Changed file exceeds 250 KB: " + filePath);\n  return text;\n}\n\nasync function commitChanges(sandbox: Sandbox) {
+async function readWorkspaceFile(sandbox: Sandbox, filePath: string) {
+  const result = await sandbox.runCommand({ cmd: "cat", args: [safePath(filePath)] });
+  if (result.exitCode !== 0) throw new Error("Could not read changed file: " + filePath);
+  const text = await result.stdout();
+  if (Buffer.byteLength(text, "utf8") > 250000) throw new Error("Changed file exceeds 250 KB: " + filePath);
+  return text;
+}
+
+async function commitChanges(sandbox: Sandbox) {
   const status = await runCmd(sandbox, "git", ["status", "--porcelain", "--untracked-files=all"]);
   if (status.exitCode !== 0) throw new Error("Could not inspect changes");
-  const rows = status.stdout.split("\\n").map((line) => line.trimEnd()).filter(Boolean);
+  const rows = status.stdout.split("\n").map((line) => line.trimEnd()).filter(Boolean);
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
   const committed: string[] = [];
   for (const row of rows) {
@@ -125,8 +133,7 @@ async function readWorkspaceFile(sandbox: Sandbox, filePath: string) {\n  const 
       }
       continue;
     }
-    const read = await runCmd(sandbox, "cat", [safePath(filePath)]);
-    if (read.exitCode !== 0) throw new Error("Could not read changed file: " + filePath);
+    const fileContent = await readWorkspaceFile(sandbox, filePath);
     const existing = await octokit.rest.repos.getContent({ owner: OWNER, repo: REPO, path: filePath, ref: BRANCH })
       .catch((error: { status?: number }) => { if (error.status === 404) return null; throw error; });
     const sha = existing && !Array.isArray(existing.data) && existing.data.type === "file" ? existing.data.sha : undefined;
@@ -199,7 +206,13 @@ export async function POST(request: Request) {
       throw new Error("Executor reached the tool-call limit; changes were not committed");
     }
 
-    const install = await runCmd(sandbox, "npm", ["install"]);\n    if (install.exitCode !== 0) throw new Error("Dependency installation failed; no changes were committed. " + install.stderr.slice(0, 1500));\n    const typecheck = await runCmd(sandbox, "npm", ["run", "typecheck"]);\n    if (typecheck.exitCode !== 0) throw new Error("Type-check failed; no changes were committed. " + typecheck.stderr.slice(0, 1500));\n    const build = await runCmd(sandbox, "npm", ["run", "build"]);\n    if (build.exitCode !== 0) throw new Error("Build failed; no changes were committed. " + build.stderr.slice(0, 1500));\n    const changed = await commitChanges(sandbox);
+    const install = await runCmd(sandbox, "npm", ["install"]);
+    if (install.exitCode !== 0) throw new Error("Dependency installation failed; no changes were committed. " + install.stderr.slice(0, 1500));
+    const typecheck = await runCmd(sandbox, "npm", ["run", "typecheck"]);
+    if (typecheck.exitCode !== 0) throw new Error("Type-check failed; no changes were committed. " + typecheck.stderr.slice(0, 1500));
+    const build = await runCmd(sandbox, "npm", ["run", "build"]);
+    if (build.exitCode !== 0) throw new Error("Build failed; no changes were committed. " + build.stderr.slice(0, 1500));
+    const changed = await commitChanges(sandbox);
     return NextResponse.json({
       status: "completed", planner: "Gemini", executor: "OpenAI API",
       repository: OWNER + "/" + REPO, branch: BRANCH, geminiPlan,
