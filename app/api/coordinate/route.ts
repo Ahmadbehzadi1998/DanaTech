@@ -212,12 +212,33 @@ export async function POST(request: Request) {
     if (typecheck.exitCode !== 0) throw new Error("Type-check failed; no changes were committed. " + typecheck.stderr.slice(0, 1500));
     const build = await runCmd(sandbox, "npm", ["run", "build"]);
     if (build.exitCode !== 0) throw new Error("Build failed; no changes were committed. " + build.stderr.slice(0, 1500));
-    const changed = await commitChanges(sandbox);
+    const status = await runCmd(sandbox, "git", ["status", "--porcelain", "--untracked-files=all"]);
+    if (status.exitCode !== 0) throw new Error("Could not inspect workspace changes");
+    const changedFiles = status.stdout.split("\\n").map((line) => line.trimEnd()).filter(Boolean)
+      .map((line) => line.slice(3).replace(/^"|"$/g, "")).filter(Boolean);
+
+    // Safe by default: execution produces a report only. GitHub writes require an explicit
+    // Preview-environment opt-in and are restricted to the configured coordinator branch.
+    if (process.env.ALLOW_GITHUB_WRITES !== "true") {
+      return NextResponse.json({
+        status: "dry_run_completed", planner: "Gemini", executor: "OpenAI API",
+        repository: OWNER + "/" + REPO, branch: BRANCH, geminiPlan,
+        executionReport: response.output_text,
+        checks: { install: "passed", typecheck: "passed", build: "passed" },
+        changedFiles,
+        githubWrites: "disabled; set ALLOW_GITHUB_WRITES=true in Preview only to enable commits",
+        productionDeployment: "not attempted",
+      });
+    }
+    if (BRANCH !== "feature/gemini-directed-execution") {
+      throw new Error("GitHub writes are restricted to feature/gemini-directed-execution");
+    }
+    const committed = await commitChanges(sandbox);
     return NextResponse.json({
       status: "completed", planner: "Gemini", executor: "OpenAI API",
       repository: OWNER + "/" + REPO, branch: BRANCH, geminiPlan,
-      executionReport: response.output_text, checks: { install: "passed", typecheck: "passed", build: "passed" }, committedFiles: changed,
-      productionDeployment: "not attempted; separate approval required",
+      executionReport: response.output_text, checks: { install: "passed", typecheck: "passed", build: "passed" },
+      committedFiles: committed, productionDeployment: "not attempted",
     });
   } catch (error) {
     return NextResponse.json({
