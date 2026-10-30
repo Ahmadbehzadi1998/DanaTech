@@ -1,16 +1,22 @@
 # DanaTech — UAE mobile accessories storefront
 
-A lightweight, responsive bilingual (English/Arabic) storefront for UAE shoppers. Static HTML/CSS/JavaScript; no framework or build step required.
+A lightweight, responsive bilingual (English/Arabic) storefront for UAE shoppers with a 100-item mobile-accessory catalogue. Static HTML/CSS/JavaScript; no framework or build step required.
 
 ## Features
 - English / Arabic switch with RTL layout
-- Product search and category filters
+- 100 mobile-accessory listings with product search and category filters
 - Responsive product cards and reduced-motion support
 - Product buttons open Amazon.ae search results in a new tab
 - SEO metadata, accessible controls and price/affiliate disclosure
 
 ## Deploy on Vercel
 Import this repository into Vercel. Framework preset: Other; root directory: repository root; no build command is required. The requested hostname is `danatech.vercel.app`; it must be available and assigned to a Vercel project.
+
+## Digikala catalogue methodology
+
+The catalogue contains 100 items. Sixteen items have identifiable positions in a public third-party snapshot of Digikala's mobile best-selling list; their rank labels are preserved in the UI. Other items are curated category selections, not asserted to be Digikala top-100 sellers. The public snapshot does not provide a complete, verifiable top-100 list restricted to mobile accessories. The storefront uses Amazon.ae search links for UAE shoppers; no Digikala prices, stock claims or seller ratings are copied into the store.
+
+Reference: https://sysshop.ir/best-selling/پرفروش-ترین-های-موبایل
 
 ## UAE product research
 The initial assortment reflects categories and examples visible in UAE marketplace popularity/bestseller pages checked on 23 October 2026:

@@ -32,8 +32,8 @@ assert(html.includes('rel="canonical" href="https://danatech.vercel.app/"'), "En
 assert(arabicHtml.includes('<html lang="ar" dir="rtl">'), "Arabic route declares language and RTL direction");
 assert(arabicHtml.includes('rel="canonical" href="https://danatech.vercel.app/ar/"'), "Arabic canonical URL is present");
 assert(html.includes('hreflang="ar-AE"') && arabicHtml.includes('hreflang="en-AE"'), "language alternates are reciprocal");
-assert((html.match(/<article class="product" data-category=/g) || []).length === 14, "English HTML pre-renders all 14 products");
-assert((arabicHtml.match(/<article class="product" data-category=/g) || []).length === 14, "Arabic HTML pre-renders all 14 products");
+assert((html.match(/<article class="product" data-category=/g) || []).length === 100, "English HTML pre-renders all 100 products");
+assert((arabicHtml.match(/<article class="product" data-category=/g) || []).length === 100, "Arabic HTML pre-renders all 100 products");
 assert(html.includes('application/ld+json') && arabicHtml.includes('application/ld+json'), "both routes include structured data");
 assert(robots.includes("Sitemap: https://danatech.vercel.app/sitemap.xml"), "robots.txt advertises sitemap");
 assert(sitemap.includes("https://danatech.vercel.app/ar/"), "sitemap includes Arabic route");
@@ -42,12 +42,21 @@ assert(!/<style>([\s\S]*?)<\/style>/i.test(html), "there are no inline style blo
 assert(!/\son(?:error|load|click)=/i.test(html + js), "there are no inline event-handler attributes");
 assert(js.includes('querySelectorAll(".product-photo")'), "product image fallback uses registered event listeners");
 
-const productsBlock = js.match(/const products=\[([\s\S]*?)\n\];\nconst cats=/);
-const productCount = productsBlock ? [...productsBlock[1].matchAll(/\{id:"[^"]+"/g)].length : 0;
-assert(productCount === 14, "catalogue contains the expected 14 product entries");
-assert((js.match(/tagAr:/g) || []).length === 14, "all product tags have Arabic labels");
+const productsStart = js.indexOf("const products=") + "const products=".length;
+const catsStart = js.indexOf("const cats=", productsStart);
+const productsEnd = js.lastIndexOf(";", catsStart);
+const catalogue = productsStart >= "const products=".length && catsStart > productsStart && productsEnd > productsStart
+  ? JSON.parse(js.slice(productsStart, productsEnd))
+  : [];
+const productCount = catalogue.length;
+assert(productCount === 100, "catalogue contains the expected 100 product entries");
+assert(catalogue.filter((product) => Number.isInteger(product.digikalaRank)).length === 16, "16 catalogue products carry observed Digikala bestseller ranks");
+assert(catalogue.some((product) => product.source === "curated") && catalogue.some((product) => product.source === "digikala"), "catalogue distinguishes ranked Digikala products from curated picks");
+assert(catalogue.every((product) => product.tagAr && product.name?.ar && product.desc?.ar), "all 100 products have Arabic names, descriptions and tags");
+assert(new Set(catalogue.map((product) => product.id)).size === 100, "all catalogue product IDs are unique");
 assert(!js.includes('price:"AED '), "stale fixed AED price snapshots are removed");
 assert(js.includes("Check current price") && js.includes("تحقّق من السعر"), "live retailer price guidance is bilingual");
+assert(html.includes("16 items have identifiable positions") && arabicHtml.includes("١٦ منتجاً لها رتبة ظاهرة"), "both storefront languages disclose the Digikala ranking scope");
 assert(html.includes("DanaTech does not display fixed prices") && html.includes("لا يعرض DanaTech أسعاراً ثابتة"), "price disclosure matches the no-fixed-price catalogue");
 assert(!html.includes("displayed prices are indicative snapshots"), "outdated price disclosure is removed");
 assert(js.includes('document.documentElement.dir=lang==="ar"?"rtl":"ltr"'), "language switch updates RTL/LTR direction");
