@@ -32,6 +32,8 @@ assert(productCount === 14, "catalogue contains the expected 14 product entries"
 assert((html.match(/tagAr:/g) || []).length === 14, "all product tags have Arabic labels");
 assert(!html.includes('price:"AED '), "stale fixed AED price snapshots are removed");
 assert(html.includes("Check current price") && html.includes("تحقّق من السعر"), "live retailer price guidance is bilingual");
+assert(html.includes("DanaTech does not display fixed prices") && html.includes("لا يعرض DanaTech أسعاراً ثابتة"), "price disclosure matches the no-fixed-price catalogue");
+assert(!html.includes("displayed prices are indicative snapshots"), "outdated price disclosure is removed");
 assert(html.includes('document.documentElement.dir=lang==="ar"?"rtl":"ltr"'), "language switch updates RTL/LTR direction");
 assert(html.includes('addEventListener("search"'), "clearing the search field refreshes results");
 assert(html.includes('aria-live="polite"'), "product results announce updates accessibly");
