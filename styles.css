@@ -212,22 +212,9 @@ header{position:relative;z-index:5;padding:18px 0}
   transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
 }
 .product:hover{transform:translateY(-4px);border-color:rgba(112,168,226,.46);box-shadow:0 17px 36px rgba(45,94,154,.13),inset 0 1px rgba(255,255,255,.95)}
-.visual{
-  position:relative;display:grid;place-items:center;overflow:hidden;height:150px;
-  border:1px solid rgba(255,255,255,.94);border-radius:17px;
-  background:
-    radial-gradient(circle at 75% 12%,rgba(255,255,255,.95),transparent 35%),
-    linear-gradient(145deg,#e9f4ff,#d5eaff 58%,#e9f5ff);
-}
-.visual:before{
-  content:"";position:absolute;width:150px;height:150px;border:1px solid rgba(255,255,255,.76);
-  border-radius:50%;left:-30px;bottom:-78px;box-shadow:0 0 0 15px rgba(255,255,255,.12);
-}
-.visual .icon{font-size:56px;filter:drop-shadow(0 10px 7px rgba(30,75,126,.14))}
-.visual .product-photo{position:relative;z-index:1;width:100%;height:100%;padding:9px;object-fit:contain;mix-blend-mode:multiply}
-.visual .poster-art{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%;padding:12px}
-.visual .poster-art svg{width:100%;height:100%;max-width:180px;max-height:135px;filter:drop-shadow(0 10px 7px rgba(18,54,99,.12))}
-.visual .poster-art[hidden]{display:none!important}
+.visual{position:relative;display:grid;place-items:center;overflow:hidden;height:150px;border:1px solid rgba(255,255,255,.94);border-radius:17px;background:radial-gradient(circle at 75% 12%,rgba(255,255,255,.95),transparent 35%),linear-gradient(145deg,#e9f4ff,#d5eaff 58%,#e9f5ff)}
+.visual:before{content:"";position:absolute;width:150px;height:150px;border:1px solid rgba(255,255,255,.76);border-radius:50%;left:-30px;bottom:-78px;box-shadow:0 0 0 15px rgba(255,255,255,.12)}
+.visual .poster-art{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%;padding:8px}.visual .poster-art svg{width:100%;height:100%;max-width:240px;max-height:180px;filter:drop-shadow(0 10px 7px rgba(18,54,99,.12))}.poster-placeholder{font-size:56px;color:#397dc2}
 .tag{
   position:absolute;z-index:2;top:10px;left:10px;padding:5px 10px;border-radius:999px;
   color:#35649b;background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.94);
@@ -271,10 +258,12 @@ footer{
 .foot .mark{color:#2259a1;background:linear-gradient(145deg,#fff,#d8edff);box-shadow:inset 0 1px rgba(255,255,255,.9),0 6px 15px rgba(8,34,76,.16)}
 .foot p{margin:5px 0 0;color:rgba(235,246,255,.78);font-size:13px}
 .foot a{color:#fff;font-weight:750}
-html[dir=rtl] body{font-family:Tahoma,Arial,sans-serif}
+html[dir=rtl] body{font-family:Vazirmatn,Tahoma,Arial,sans-serif}
 html[dir=rtl] .hero h1,html[dir=rtl] .section-head h2{letter-spacing:0}
 html[dir=rtl] .tag{left:auto;right:10px}
 html[dir=rtl] .art{direction:ltr}
+html[dir=rtl] .product h3,html[dir=rtl] .desc,html[dir=rtl] .price{text-align:right}
+.source-note{margin:8px 0 0;font-size:11px}.source-note a{color:#397dc2;text-decoration:underline;text-underline-offset:3px}
 html[dir=rtl] .topline{letter-spacing:0}
 :focus-visible{outline:3px solid rgba(44,112,196,.46);outline-offset:3px}
 @media(max-width:900px){
