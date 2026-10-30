@@ -21,7 +21,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-Y8C/mJyymR4bp+YfMSRu7XdKCJrTYQ6AyKHxXADWbqc=' 'sha256-9NMqnzAoRDKKpTo8TdQesDE+LxwasTRmTOP6V7S6leI='; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'self'; script-src-attr 'none'; style-src-attr 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com data:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'self'; script-src-attr 'none'; style-src-attr 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",
@@ -40,14 +40,34 @@
   ],
   "redirects": [
     {
+      "source": "/fa",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/fa/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/ar",
-      "destination": "/fa/",
+      "destination": "/",
       "permanent": true
     },
     {
       "source": "/ar/:path*",
-      "destination": "/fa/:path*",
+      "destination": "/",
       "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/product/:slug",
+      "destination": "/product.html"
+    },
+    {
+      "source": "/en/product/:slug",
+      "destination": "/product.html"
     }
   ]
 }
