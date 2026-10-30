@@ -1,0 +1,22 @@
+name: Storefront quality checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [fix/storefront-quality-2026-10]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Validate static storefront and security headers
+        run: node scripts/validate-storefront.mjs
+      - name: Check patch whitespace
+        run: git diff --check
