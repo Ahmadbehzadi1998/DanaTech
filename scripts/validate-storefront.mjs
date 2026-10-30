@@ -41,6 +41,12 @@ assert(js.includes('document.documentElement.dir=lang==="ar"?"rtl":"ltr"'), "lan
 assert(js.includes('addEventListener("search"'), "clearing the search field refreshes results");
 assert(html.includes('aria-live="polite"'), "product results announce updates accessibly");
 assert(css.includes("@media(max-width:600px)"), "mobile layout breakpoint is present");
+assert(css.includes("--lapis:#2456ad") && css.includes("--ice:#d9efff"), "Persian blue and icy-blue design tokens are present");
+assert(css.includes("backdrop-filter:blur("), "Liquid Glass blur and translucency are enabled");
+assert(css.includes("rgba(255,255,255,.") && css.includes("inset 0 1px"), "glass reflections and inner highlights are present");
+assert(css.includes("@media(max-width:900px)") && css.includes("@media(max-width:600px)"), "tablet and mobile responsive layouts are present");
+assert(css.includes("prefers-reduced-motion:reduce"), "reduced-motion accessibility is preserved");
+
 
 const headers = vercel.headers?.[0]?.headers ?? [];
 const csp = headers.find((header) => header.key === "Content-Security-Policy")?.value ?? "";
