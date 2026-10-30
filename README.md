@@ -24,6 +24,10 @@ The storefront does not display fixed product prices because marketplace prices 
 ## Affiliate status
 Amazon.ae links are ordinary search links without an affiliate tracking ID. No affiliate commission should be expected until the appropriate Associates account is approved and a valid tracking ID is configured. Do not add a tracking ID until approved.
 
+## Automated checks
+
+Run `node scripts/validate-storefront.mjs` from the repository root. The GitHub Actions workflow runs the same static JavaScript, catalogue, bilingual UI and Content Security Policy checks for pull requests targeting `main`.
+
 ## Quality and security notes
 - The Content Security Policy allows images only from the exact product-image hosts used by the catalogue; it does not broadly allow arbitrary remote images.
 - Security headers include HSTS and disable unnecessary cross-domain policy behavior.
