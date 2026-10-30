@@ -5,6 +5,9 @@ const html = readFileSync("index.html", "utf8");
 const js = readFileSync("app.js", "utf8");
 const css = readFileSync("styles.css", "utf8");
 const vercel = JSON.parse(readFileSync("vercel.json", "utf8"));
+const arabicHtml = readFileSync("ar/index.html", "utf8");
+const robots = readFileSync("robots.txt", "utf8");
+const sitemap = readFileSync("sitemap.xml", "utf8");
 
 function assert(condition, message) {
   if (!condition) {
@@ -24,6 +27,13 @@ try {
 }
 assert(html.includes('<script src="/app.js" defer></script>'), "HTML loads the deferred same-origin application script");
 assert(html.includes('<link rel="stylesheet" href="/styles.css">'), "HTML loads the same-origin stylesheet");
+assert(html.includes('rel="canonical" href="https://danatech.vercel.app/"'), "English canonical URL is present");
+assert(arabicHtml.includes('<html lang="ar" dir="rtl">'), "Arabic route declares language and RTL direction");
+assert(arabicHtml.includes('rel="canonical" href="https://danatech.vercel.app/ar/"'), "Arabic canonical URL is present");
+assert(html.includes('hreflang="ar-AE"') && arabicHtml.includes('hreflang="en-AE"'), "language alternates are reciprocal");
+assert(html.includes('application/ld+json') && arabicHtml.includes('application/ld+json'), "both routes include structured data");
+assert(robots.includes("Sitemap: https://danatech.vercel.app/sitemap.xml"), "robots.txt advertises sitemap");
+assert(sitemap.includes("https://danatech.vercel.app/ar/"), "sitemap includes Arabic route");
 assert(!/<script>([\s\S]*?)<\/script>/i.test(html), "there are no inline script blocks");
 assert(!/<style>([\s\S]*?)<\/style>/i.test(html), "there are no inline style blocks");
 assert(!/\son(?:error|load|click)=/i.test(html + js), "there are no inline event-handler attributes");
@@ -65,7 +75,9 @@ for (const host of imageHosts) {
 assert(!imgSrc.split(/\s+/).includes("https:"), "CSP does not allow arbitrary HTTPS image hosts");
 assert(!csp.includes("unsafe-inline"), "CSP blocks inline scripts and styles");
 assert(headers.some((header) => header.key === "X-Content-Type-Options" && header.value === "nosniff"), "MIME sniffing protection is enabled");
-assert(headers.some((header) => header.key === "Strict-Transport-Security"), "HSTS is configured");
+assert(headers.some((header) => header.key === "Strict-Transport-Security" && !header.value.includes("includeSubDomains")), "HSTS is scoped to this hostname");
+assert(headers.some((header) => header.key === "Cross-Origin-Opener-Policy" && header.value === "same-origin"), "COOP isolation header is enabled");
+assert(csp.includes("script-src-attr") && csp.includes("style-src-attr"), "CSP explicitly blocks inline event and style attributes");
 assert(headers.some((header) => header.key === "X-Permitted-Cross-Domain-Policies" && header.value === "none"), "legacy cross-domain policies are disabled");
 
 if (process.exitCode === 1) process.exit(1);
