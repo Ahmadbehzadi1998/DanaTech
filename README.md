@@ -29,7 +29,7 @@ Amazon.ae links are ordinary search links without an affiliate tracking ID. No a
 Run `node scripts/validate-storefront.mjs` from the repository root. The GitHub Actions workflow runs the same static JavaScript, catalogue, bilingual UI and Content Security Policy checks for pull requests targeting `main`.
 
 ## Quality and security notes
-- The Content Security Policy allows images only from the exact product-image hosts used by the catalogue; it does not broadly allow arbitrary remote images.
+- CSS and JavaScript are served as same-origin files, not inline blocks. The Content Security Policy blocks inline scripts/styles and allows images only from the exact product-image hosts used by the catalogue; it does not broadly allow arbitrary remote images.
 - Security headers include HSTS and disable unnecessary cross-domain policy behavior.
 - Fixed price snapshots are intentionally omitted; customers should confirm live offers with the retailer.
 
