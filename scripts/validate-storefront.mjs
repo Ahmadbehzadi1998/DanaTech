@@ -13,20 +13,21 @@ function assert(condition, message) {
   }
 }
 
-const inlineScripts = [...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)];
+const inlineScripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
 assert(inlineScripts.length > 0, "inline storefront script exists");
+let scriptsParse = inlineScripts.length > 0;
 for (const [index, match] of inlineScripts.entries()) {
   try {
     new Script(match[1], { filename: `index.html:inline-script-${index + 1}` });
   } catch (error) {
+    scriptsParse = false;
     console.error(error);
-    process.exitCode = 1;
   }
 }
-assert(inlineScripts.length > 0 && process.exitCode !== 1, "inline JavaScript parses");
+assert(scriptsParse, "inline JavaScript parses");
 
-const productsBlock = html.match(/const products=\\[([\\s\\S]*?)\\n\\];\\nconst cats=/);
-const productCount = productsBlock ? [...productsBlock[1].matchAll(/\\{id:"[^"]+"/g)].length : 0;
+const productsBlock = html.match(/const products=\[([\s\S]*?)\n\];\nconst cats=/);
+const productCount = productsBlock ? [...productsBlock[1].matchAll(/\{id:"[^"]+"/g)].length : 0;
 assert(productCount === 14, "catalogue contains the expected 14 product entries");
 assert((html.match(/tagAr:/g) || []).length === 14, "all product tags have Arabic labels");
 assert(!html.includes('price:"AED '), "stale fixed AED price snapshots are removed");
@@ -50,7 +51,7 @@ const imageHosts = [
 for (const host of imageHosts) {
   assert(imgSrc.includes(`https://${host}`), `CSP allows the required image host ${host}`);
 }
-assert(!imgSrc.split(/\\s+/).includes("https:"), "CSP does not allow arbitrary HTTPS image hosts");
+assert(!imgSrc.split(/\s+/).includes("https:"), "CSP does not allow arbitrary HTTPS image hosts");
 assert(headers.some((header) => header.key === "X-Content-Type-Options" && header.value === "nosniff"), "MIME sniffing protection is enabled");
 assert(headers.some((header) => header.key === "Strict-Transport-Security"), "HSTS is configured");
 assert(headers.some((header) => header.key === "X-Permitted-Cross-Domain-Policies" && header.value === "none"), "legacy cross-domain policies are disabled");
