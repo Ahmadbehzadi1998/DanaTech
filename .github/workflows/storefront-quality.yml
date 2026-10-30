@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
       - name: Validate static storefront and security headers
         run: node scripts/validate-storefront.mjs
       - name: Check patch whitespace
