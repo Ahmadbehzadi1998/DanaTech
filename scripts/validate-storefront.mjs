@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { Script } from "node:vm";
+import { createHash } from "node:crypto";
 
 const html = readFileSync("index.html", "utf8");
 const js = readFileSync("app.js", "utf8");
@@ -61,6 +62,15 @@ assert(css.includes("prefers-reduced-motion:reduce"), "reduced-motion accessibil
 const headers = vercel.headers?.[0]?.headers ?? [];
 const csp = headers.find((header) => header.key === "Content-Security-Policy")?.value ?? "";
 const imgSrc = csp.match(/(?:^|; )img-src ([^;]+)/)?.[1] ?? "";
+const englishJsonLd = html.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/)?.[1] ?? "";
+const arabicJsonLd = arabicHtml.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/)?.[1] ?? "";
+const hash = (value) => "'sha256-" + createHash("sha256").update(value).digest("base64") + "'";
+assert(englishJsonLd.length > 0 && csp.includes(hash(englishJsonLd)), "English JSON-LD hash is permitted by CSP");
+assert(arabicJsonLd.length > 0 && csp.includes(hash(arabicJsonLd)), "Arabic JSON-LD hash is permitted by CSP");
+assert(js.includes('document.documentElement.lang==="ar"?"ar":"en"'), "application initializes language from the route");
+assert(js.includes('location.assign("/ar/")') && js.includes('location.assign("/")'), "language switching navigates to canonical routes");
+assert(js.includes("encodeURIComponent(q)"), "retailer search terms are URL-encoded");
+
 const imageHosts = [
   "ankeruae.ae",
   "cdn.shopify.com",
