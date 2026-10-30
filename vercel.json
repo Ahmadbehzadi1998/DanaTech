@@ -21,15 +21,19 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://ankeruae.ae https://cdn.shopify.com https://www.ugreen.com https://i02.appmifile.com https://store.storeimages.cdn-apple.com https://soundcoreuae.myshopify.com; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'sha256-Y8C/mJyymR4bp+YfMSRu7XdKCJrTYQ6AyKHxXADWbqc=' 'sha256-qPls8pOXF+OKyJP8YbO+zvngaX0puYLPfss725iWXtU='; style-src 'self'; img-src 'self' data: https://ankeruae.ae https://cdn.shopify.com https://www.ugreen.com https://i02.appmifile.com https://store.storeimages.cdn-apple.com https://soundcoreuae.myshopify.com; connect-src 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; base-uri 'self'; script-src-attr 'none'; style-src-attr 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
+          "value": "max-age=31536000"
         },
         {
           "key": "X-Permitted-Cross-Domain-Policies",
           "value": "none"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
         }
       ]
     }
