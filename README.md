@@ -19,12 +19,21 @@ The initial assortment reflects categories and examples visible in UAE marketpla
 - [Noon UAE — Headphones & earphones best sellers](https://www.noon.com/uae-en/best-sellers/headphones-24056/)
 - [Amazon.ae — Power bank best sellers](https://www.amazon.ae/gp/bestsellers/mobile-phones/12304344031)
 
-Displayed prices are indicative snapshots and may change. Always verify price, stock, delivery, warranty and compatibility with the retailer. The UI does not claim universal compatibility.
+The storefront does not display fixed product prices because marketplace prices and availability change. Product buttons open Amazon.ae search results; verify the current price, seller, stock, delivery, warranty and device compatibility on the retailer page. The UI does not claim universal compatibility.
 
 ## Affiliate status
 Amazon.ae links are ordinary search links without an affiliate tracking ID. No affiliate commission should be expected until the appropriate Associates account is approved and a valid tracking ID is configured. Do not add a tracking ID until approved.
 
+## Automated checks
+
+Run `node scripts/validate-storefront.mjs` from the repository root. The GitHub Actions workflow runs the same static JavaScript, catalogue, bilingual UI and Content Security Policy checks for pull requests targeting `main`.
+
+## Quality and security notes
+- CSS and JavaScript are served as same-origin files, not inline blocks. The Content Security Policy blocks inline scripts/styles and allows images only from the exact product-image hosts used by the catalogue; it does not broadly allow arbitrary remote images.
+- Security headers include HSTS and disable unnecessary cross-domain policy behavior.
+- Fixed price snapshots are intentionally omitted; customers should confirm live offers with the retailer.
+
 ## Notes
 - No customer data is collected; no checkout/payment flow is implemented.
-- Product visuals are CSS illustrations/icons to avoid unlicensed retailer imagery and hotlink failures.
+- Product cards use a mix of retailer-hosted product image URLs and locally generated SVG fallback illustrations. External image hosts are explicitly allowlisted by the Content Security Policy; if a retailer blocks hotlinking, the fallback illustration remains available.
 - Verify retailer prices, availability and specifications before advertising offers.
