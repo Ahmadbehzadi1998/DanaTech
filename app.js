@@ -15,7 +15,7 @@ const products=[
 {id:"stand",cat:"car",icon:"▱",tag:"Work & study",tagAr:"للعمل والدراسة",name:{en:"UGREEN MagSafe Desk Holder",ar:"حامل مكتبي UGREEN MagSafe"},desc:{en:"A desk holder for compatible MagSafe phones and accessories.",ar:"حامل مكتبي للهواتف وإكسسوارات MagSafe المتوافقة."},query:"UGREEN MagSafe Desk Holder UAE"}
 ];
 const cats=[{id:"all",en:"All items",ar:"كل المنتجات"},{id:"chargers",en:"Chargers",ar:"الشواحن"},{id:"power",en:"Power banks",ar:"بنوك الطاقة"},{id:"cables",en:"Cables",ar:"الكابلات"},{id:"audio",en:"Audio",ar:"الصوتيات"},{id:"wireless",en:"Wireless",ar:"الشحن اللاسلكي"},{id:"protection",en:"Cases & protection",ar:"الأغطية والحماية"},{id:"car",en:"Car & stands",ar:"السيارة والحوامل"}];
-let lang="en",activeCat="all",query="";const $=id=>document.getElementById(id);
+let lang=document.documentElement.lang==="ar"?"ar":"en",activeCat="all",query="";const $=id=>document.getElementById(id);
 function amazonUrl(q){return "https://www.amazon.ae/s?k="+encodeURIComponent(q)}
 function renderFilters(){$("filters").setAttribute("aria-label",lang==="en"?"Filter products":"تصفية المنتجات");$("filters").innerHTML=cats.map(c=>'<button type="button" class="filter '+(activeCat===c.id?'active':'')+'" data-cat="'+c.id+'" aria-pressed="'+String(activeCat===c.id)+'">'+c[lang]+'</button>').join("");$("filters").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{activeCat=b.dataset.cat;renderFilters();renderProducts()}))}
 const productPhotos={
