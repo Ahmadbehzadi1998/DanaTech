@@ -43,8 +43,9 @@ assert(!/\son(?:error|load|click)=/i.test(html + js), "there are no inline event
 assert(js.includes('querySelectorAll(".product-photo")'), "product image fallback uses registered event listeners");
 
 const productsStart = js.indexOf("const products=") + "const products=".length;
-const productsEnd = js.indexOf(";" + String.fromCharCode(10) + "const cats=", productsStart);
-const catalogue = productsStart >= "const products=".length && productsEnd > productsStart
+const catsStart = js.indexOf("const cats=", productsStart);
+const productsEnd = js.lastIndexOf(";", catsStart);
+const catalogue = productsStart >= "const products=".length && catsStart > productsStart && productsEnd > productsStart
   ? JSON.parse(js.slice(productsStart, productsEnd))
   : [];
 const productCount = catalogue.length;
