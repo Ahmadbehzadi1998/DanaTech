@@ -42,12 +42,14 @@ assert(!/<style>([\s\S]*?)<\/style>/i.test(html), "there are no inline style blo
 assert(!/\son(?:error|load|click)=/i.test(html + js), "there are no inline event-handler attributes");
 assert(js.includes('querySelectorAll(".product-photo")'), "product image fallback uses registered event listeners");
 
-const productsBlock = js.match(/const products=\[([\s\S]*?)\n\];\nconst cats=/);
-const productCount = productsBlock ? [...productsBlock[1].matchAll(/\{id:"[^"]+"/g)].length : 0;
+const productsBlock = js.match(/const products=(\\[.*?\\]);\\nconst cats=/s);
+const catalogue = productsBlock ? JSON.parse(productsBlock[1]) : [];
+const productCount = catalogue.length;
 assert(productCount === 100, "catalogue contains the expected 100 product entries");
-assert((js.match(/digikalaRank:/g) || []).length === 16, "16 catalogue products carry observed Digikala bestseller ranks");
-assert(js.includes("source:\"curated\"") && js.includes("source:\"digikala\""), "catalogue distinguishes ranked Digikala products from curated picks");
-assert((js.match(/tagAr:/g) || []).length === 100, "all 100 product tags have Arabic labels");
+assert(catalogue.filter((product) => Number.isInteger(product.digikalaRank)).length === 16, "16 catalogue products carry observed Digikala bestseller ranks");
+assert(catalogue.some((product) => product.source === "curated") && catalogue.some((product) => product.source === "digikala"), "catalogue distinguishes ranked Digikala products from curated picks");
+assert(catalogue.every((product) => product.tagAr && product.name?.ar && product.desc?.ar), "all 100 products have Arabic names, descriptions and tags");
+assert(new Set(catalogue.map((product) => product.id)).size === 100, "all catalogue product IDs are unique");
 assert(!js.includes('price:"AED '), "stale fixed AED price snapshots are removed");
 assert(js.includes("Check current price") && js.includes("تحقّق من السعر"), "live retailer price guidance is bilingual");
 assert(html.includes("16 items have identifiable positions") && arabicHtml.includes("١٦ منتجاً لها رتبة ظاهرة"), "both storefront languages disclose the Digikala ranking scope");
