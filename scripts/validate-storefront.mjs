@@ -32,6 +32,8 @@ assert(html.includes('rel="canonical" href="https://danatech.vercel.app/"'), "En
 assert(arabicHtml.includes('<html lang="ar" dir="rtl">'), "Arabic route declares language and RTL direction");
 assert(arabicHtml.includes('rel="canonical" href="https://danatech.vercel.app/ar/"'), "Arabic canonical URL is present");
 assert(html.includes('hreflang="ar-AE"') && arabicHtml.includes('hreflang="en-AE"'), "language alternates are reciprocal");
+assert((html.match(/<article class="product" data-category=/g) || []).length === 14, "English HTML pre-renders all 14 products");
+assert((arabicHtml.match(/<article class="product" data-category=/g) || []).length === 14, "Arabic HTML pre-renders all 14 products");
 assert(html.includes('application/ld+json') && arabicHtml.includes('application/ld+json'), "both routes include structured data");
 assert(robots.includes("Sitemap: https://danatech.vercel.app/sitemap.xml"), "robots.txt advertises sitemap");
 assert(sitemap.includes("https://danatech.vercel.app/ar/"), "sitemap includes Arabic route");
