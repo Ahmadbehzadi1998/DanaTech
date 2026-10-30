@@ -24,13 +24,13 @@ try {
 }
 assert(html.includes('<script src="/app.js" defer></script>'), "HTML loads the deferred same-origin application script");
 assert(html.includes('<link rel="stylesheet" href="/styles.css">'), "HTML loads the same-origin stylesheet");
-assert(!/<script>([\\s\\S]*?)<\\/script>/i.test(html), "there are no inline script blocks");
-assert(!/<style>([\\s\\S]*?)<\\/style>/i.test(html), "there are no inline style blocks");
-assert(!/\\son(?:error|load|click)=/i.test(html + js), "there are no inline event-handler attributes");
+assert(!/<script>([\s\S]*?)<\/script>/i.test(html), "there are no inline script blocks");
+assert(!/<style>([\s\S]*?)<\/style>/i.test(html), "there are no inline style blocks");
+assert(!/\son(?:error|load|click)=/i.test(html + js), "there are no inline event-handler attributes");
 assert(js.includes('querySelectorAll(".product-photo")'), "product image fallback uses registered event listeners");
 
-const productsBlock = js.match(/const products=\\[([\\s\\S]*?)\\n\\];\\nconst cats=/);
-const productCount = productsBlock ? [...productsBlock[1].matchAll(/\\{id:"[^"]+"/g)].length : 0;
+const productsBlock = js.match(/const products=\[([\s\S]*?)\n\];\nconst cats=/);
+const productCount = productsBlock ? [...productsBlock[1].matchAll(/\{id:"[^"]+"/g)].length : 0;
 assert(productCount === 14, "catalogue contains the expected 14 product entries");
 assert((js.match(/tagAr:/g) || []).length === 14, "all product tags have Arabic labels");
 assert(!js.includes('price:"AED '), "stale fixed AED price snapshots are removed");
@@ -56,7 +56,7 @@ const imageHosts = [
 for (const host of imageHosts) {
   assert(imgSrc.includes(`https://${host}`), `CSP allows the required image host ${host}`);
 }
-assert(!imgSrc.split(/\\s+/).includes("https:"), "CSP does not allow arbitrary HTTPS image hosts");
+assert(!imgSrc.split(/\s+/).includes("https:"), "CSP does not allow arbitrary HTTPS image hosts");
 assert(!csp.includes("unsafe-inline"), "CSP blocks inline scripts and styles");
 assert(headers.some((header) => header.key === "X-Content-Type-Options" && header.value === "nosniff"), "MIME sniffing protection is enabled");
 assert(headers.some((header) => header.key === "Strict-Transport-Security"), "HSTS is configured");
