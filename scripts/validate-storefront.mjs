@@ -42,8 +42,11 @@ assert(!/<style>([\s\S]*?)<\/style>/i.test(html), "there are no inline style blo
 assert(!/\son(?:error|load|click)=/i.test(html + js), "there are no inline event-handler attributes");
 assert(js.includes('querySelectorAll(".product-photo")'), "product image fallback uses registered event listeners");
 
-const productsBlock = js.match(/const products=(\\[.*?\\]);\\nconst cats=/s);
-const catalogue = productsBlock ? JSON.parse(productsBlock[1]) : [];
+const productsStart = js.indexOf("const products=") + "const products=".length;
+const productsEnd = js.indexOf(";\\nconst cats=", productsStart);
+const catalogue = productsStart >= "const products=".length && productsEnd > productsStart
+  ? JSON.parse(js.slice(productsStart, productsEnd))
+  : [];
 const productCount = catalogue.length;
 assert(productCount === 100, "catalogue contains the expected 100 product entries");
 assert(catalogue.filter((product) => Number.isInteger(product.digikalaRank)).length === 16, "16 catalogue products carry observed Digikala bestseller ranks");
