@@ -62,8 +62,8 @@ assert(css.includes("prefers-reduced-motion:reduce"), "reduced-motion accessibil
 const headers = vercel.headers?.[0]?.headers ?? [];
 const csp = headers.find((header) => header.key === "Content-Security-Policy")?.value ?? "";
 const imgSrc = csp.match(/(?:^|; )img-src ([^;]+)/)?.[1] ?? "";
-const englishJsonLd = html.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/)?.[1] ?? "";
-const arabicJsonLd = arabicHtml.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/)?.[1] ?? "";
+const englishJsonLd = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] ?? "";
+const arabicJsonLd = arabicHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] ?? "";
 const hash = (value) => "'sha256-" + createHash("sha256").update(value).digest("base64") + "'";
 assert(englishJsonLd.length > 0 && csp.includes(hash(englishJsonLd)), "English JSON-LD hash is permitted by CSP");
 assert(arabicJsonLd.length > 0 && csp.includes(hash(arabicJsonLd)), "Arabic JSON-LD hash is permitted by CSP");
