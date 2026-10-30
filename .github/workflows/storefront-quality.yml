@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [fix/storefront-quality-2026-10]
+    branches: [main, design/persian-blue-liquid-glass]
 
 permissions:
   contents: read
@@ -19,4 +19,4 @@ jobs:
       - name: Validate static storefront and security headers
         run: node scripts/validate-storefront.mjs
       - name: Check patch whitespace
-        run: git diff --check
+        run: git diff --check HEAD^ HEAD
